@@ -2,11 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using GoContext;
 using Multiformats.Address;
 using LibP2P.Crypto;
-using NChannels;
 
 namespace LibP2P.Peer.Store
 {

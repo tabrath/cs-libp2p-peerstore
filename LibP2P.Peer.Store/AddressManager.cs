@@ -6,11 +6,9 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GoContext;
 using Multiformats.Address;
 using Multiformats.Address.Net;
 using Multiformats.Address.Protocols;
-using NChannels;
 using LibP2P.Utilities.Extensions;
 
 namespace LibP2P.Peer.Store

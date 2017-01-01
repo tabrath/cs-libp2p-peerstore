@@ -4,9 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using GoContext;
 using Multiformats.Address;
-using NChannels;
 using NUnit.Framework;
 
 namespace LibP2P.Peer.Store.Tests

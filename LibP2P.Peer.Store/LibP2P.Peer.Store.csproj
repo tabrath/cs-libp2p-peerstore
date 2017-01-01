@@ -45,10 +45,6 @@
       <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="GoContext, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GoContext.0.0.2-alpha\lib\net461\GoContext.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="KeySpace, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\KeySpace.1.0.1\lib\net461\KeySpace.dll</HintPath>
       <Private>True</Private>
@@ -79,10 +75,6 @@
     </Reference>
     <Reference Include="Multiformats.Hash, Version=1.0.12.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Multiformats.Hash.1.0.12\lib\net45\Multiformats.Hash.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NChannels, Version=0.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NChannels.0.1.3.0\lib\net45\NChannels.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
