@@ -140,26 +140,26 @@ namespace LibP2P.Peer.Store
 
         private struct AddrSub
         {
-            public Chan<Multiaddress> pubch;
+            public BlockingCollection<Multiaddress> pubch;
             public ReaderWriterLockSlim lk;
             public List<Multiaddress> buffer;
-            public Context ctx;
+            public CancellationToken cts;
 
             public void PubAddr(Multiaddress a)
             {
-                pubch.Send(a).Wait(ctx.AsCancellationToken());
+                pubch.Add(a, cts);
             }
         }
 
-        public Chan<Multiaddress> AddressStream(Context ctx, PeerId peer)
+        public BlockingCollection<Multiaddress> AddressStream(PeerId peer, CancellationToken cancellationToken)
         {
             var sub = new AddrSub()
             {
-                pubch = new Chan<Multiaddress>(),
-                ctx = ctx
+                pubch = new BlockingCollection<Multiaddress>(),
+                cts = cancellationToken
             };
 
-            var output = new Chan<Multiaddress>();
+            var output = new BlockingCollection<Multiaddress>();
             _addrSubs.AddOrUpdate(peer, p => Array.Empty<AddrSub>(), (p, addrs) => addrs.Concat(new[] {sub}).ToArray());
             Dictionary<string, ExpiringAddress> baseaddrset;
             var initial = _addrs.TryGetValue(peer, out baseaddrset)
@@ -168,13 +168,13 @@ namespace LibP2P.Peer.Store
 
             initial.Sort(new AddressListComparer());
 
-            Task.Run(() =>
+            Task.Factory.StartNew(() =>
             {
                 var buffer = initial.ToArray().ToList();
                 try
                 {
                     var sent = buffer.Select(a => a.ToString()).ToList();
-                    Chan<Multiaddress> outch = null;
+                    BlockingCollection<Multiaddress> outch = null;
                     Multiaddress next = null;
                     if (buffer.Count > 0)
                     {
@@ -186,7 +186,7 @@ namespace LibP2P.Peer.Store
                     var done = false;
                     while (!done)
                     {
-                        if (outch?.Send(next).Wait(1) ?? false)
+                        if (outch?.TryAdd(next, 1, cancellationToken) ?? false)
                         {
                             if (buffer.Count > 0)
                             {
@@ -195,45 +195,43 @@ namespace LibP2P.Peer.Store
                             }
                             else
                             {
-                                outch?.Close();
+                                outch?.CompleteAdding();
                                 outch = null;
                                 next = null;
                             }
                             continue;
                         }
-                        
-                        new Select()
-                            .Case(sub.pubch, (naddr, _) =>
+
+                        Multiaddress naddr;
+                        if (sub.pubch.TryTake(out naddr, 1, cancellationToken))
+                        {
+                            if (!sent.Contains(naddr.ToString()))
                             {
-                                if (!sent.Contains(naddr.ToString()))
+                                sent.Add(naddr.ToString());
+                                if (next == null)
                                 {
-                                    sent.Add(naddr.ToString());
-                                    if (next == null)
-                                    {
-                                        next = naddr;
-                                        outch = output;
-                                    }
-                                    else
-                                    {
-                                        buffer.Add(naddr);
-                                    }
+                                    next = naddr;
+                                    outch = output;
                                 }
-                            })
-                            .Case(ctx.Done, (x, y) =>
-                            {
-                                RemoveSub(peer, sub);
-                                done = true;
-                            })
-                            .End()
-                            .Wait();
+                                else
+                                {
+                                    buffer.Add(naddr);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            RemoveSub(peer, sub);
+                            done = true;
+                        }
                     }
 
                 }
                 finally
                 {
-                    output.Close();
+                    output.CompleteAdding();
                 }
-            });
+            }, cancellationToken);
 
             return output;
         }

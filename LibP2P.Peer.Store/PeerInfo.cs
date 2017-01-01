@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Runtime.Serialization;
 using System.Text;
 using Multiformats.Address;
 using Multiformats.Base;
@@ -10,8 +10,25 @@ namespace LibP2P.Peer.Store
 {
     public class PeerInfo
     {
-        public PeerId Id { get; }
-        public Multiaddress[] Addresses { get; }
+        [JsonProperty("ID", ItemConverterType = typeof(PeerIdConverter))]
+        public PeerId Id { get; internal set; }
+
+        [JsonProperty("Addrs", ItemConverterType = typeof(MultiaddressConverter))]
+        public Multiaddress[] Addresses { get; internal set; }
+
+        private static readonly JsonSerializerSettings _jsonSettings;
+
+        static PeerInfo()
+        {
+            _jsonSettings = new JsonSerializerSettings();
+            _jsonSettings.Converters.Add(new PeerIdConverter());
+            _jsonSettings.Converters.Add(new MultiaddressConverter());
+            _jsonSettings.Formatting = Formatting.None;
+            _jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+        }
+
+        [JsonConstructor]
+        internal PeerInfo() { }
 
         public PeerInfo(PeerId id, Multiaddress[] addresses)
         {
@@ -19,24 +36,82 @@ namespace LibP2P.Peer.Store
             Addresses = addresses;
         }
 
-        public byte[] MarshalJson()
+        public byte[] MarshalJson() => Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this, _jsonSettings));
+        public static PeerInfo UnmarshalJson(byte[] b) => JsonConvert.DeserializeObject<PeerInfo>(Encoding.UTF8.GetString(b), _jsonSettings);
+    }
+
+    public class MultiaddressConverter : JsonConverter
+    {
+        public override bool CanRead => true;
+        public override bool CanWrite => true;
+        public override bool CanConvert(Type objectType) => objectType == typeof(Multiaddress);
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var output = new Dictionary<string, object>
+            if (value == null)
+                writer.WriteNull();
+            else
+                serializer.Serialize(writer, ((Multiaddress)value).ToString());
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null)
+                return null;
+
+            var token = JToken.Load(reader);
+            switch (token.Type)
             {
-                ["ID"] = Id.ToString(Multibase.Base58),
-                ["Addrs"] = Addresses.Select(a => a.ToString()).ToArray()
-            };
-
-            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(output));
+                case JTokenType.Null:
+                    return null;
+                case JTokenType.String:
+                    return Multiaddress.Decode((string)token);
+                case JTokenType.Bytes:
+                    return Multiaddress.Decode((byte[]) token);
+                case JTokenType.Object:
+                    var value = (string) token["$value"];
+                    return value == null ? null : Multiaddress.Decode(value);
+                default:
+                    throw new SerializationException("Unknown Multiaddress format");
+            }
         }
+    }
 
-        public static PeerInfo UnmarshalJson(byte[] b)
+    public class PeerIdConverter : JsonConverter
+    {
+        public override bool CanRead => true;
+        public override bool CanWrite => true;
+        public override bool CanConvert(Type objectType) => objectType == typeof(PeerId);
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(Encoding.UTF8.GetString(b));
-            var pid = new PeerId(Multibase.DecodeRaw(Multibase.Base58, (string) data["ID"]));
-            var addrs = ((JArray)data["Addrs"]).Select(t => Multiaddress.Decode((string)t));
-
-            return new PeerInfo(pid, addrs.ToArray());
+            if (value == null)
+                writer.WriteNull();
+            else
+                serializer.Serialize(writer, ((PeerId)value).ToString(Multibase.Base58));
         }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null)
+                return null;
+
+            var token = JToken.Load(reader);
+            switch (token.Type)
+            {
+                case JTokenType.Null:
+                    return null;
+                case JTokenType.String:
+                    return new PeerId(Multibase.DecodeRaw(Multibase.Base58, (string)token));
+                case JTokenType.Bytes:
+                    return new PeerId((byte[])token);
+                case JTokenType.Object:
+                    var value = (string)token["$value"];
+                    return value == null ? null : new PeerId(Multibase.DecodeRaw(Multibase.Base58, value));
+                default:
+                    throw new SerializationException("Unknown PeerId format");
+            }
+        }
+
     }
 }
