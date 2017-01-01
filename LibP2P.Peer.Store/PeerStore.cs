@@ -86,7 +86,7 @@ namespace LibP2P.Peer.Store
         public void AddAddress(PeerId p, Multiaddress addr, TimeSpan ttl) => _addrManager.AddAddress(p, addr, ttl);
         public void AddAddresses(PeerId p, IEnumerable<Multiaddress> addrs, TimeSpan ttl) => _addrManager.AddAddresses(p, addrs, ttl);
         public void ClearAddresses(PeerId peer) => _addrManager.ClearAddresses(peer);
-        public BlockingCollection<Multiaddress> AddressStream(PeerId peer, CancellationToken cancellationToken) => _addrManager.AddressStream(peer, cancellationToken);
+        //public BlockingCollection<Multiaddress> AddressStream(PeerId peer, CancellationToken cancellationToken) => _addrManager.AddressStream(peer, cancellationToken);
         public void SetAddress(PeerId p, Multiaddress addr, TimeSpan ttl) => _addrManager.SetAddress(p, addr, ttl);
         public void SetAddresses(PeerId p, IEnumerable<Multiaddress> addrs, TimeSpan ttl) => _addrManager.SetAddresses(p, addrs, ttl);
     }

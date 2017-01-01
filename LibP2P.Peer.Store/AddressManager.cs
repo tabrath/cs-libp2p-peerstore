@@ -151,7 +151,7 @@ namespace LibP2P.Peer.Store
             }
         }
 
-        public BlockingCollection<Multiaddress> AddressStream(PeerId peer, CancellationToken cancellationToken)
+        /*public BlockingCollection<Multiaddress> AddressStream(PeerId peer, CancellationToken cancellationToken)
         {
             var sub = new AddrSub()
             {
@@ -234,7 +234,7 @@ namespace LibP2P.Peer.Store
             }, cancellationToken);
 
             return output;
-        }
+        }*/
     }
 
     public class AddressListComparer : IComparer<Multiaddress>

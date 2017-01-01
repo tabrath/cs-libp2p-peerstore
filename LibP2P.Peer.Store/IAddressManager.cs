@@ -16,7 +16,7 @@ namespace LibP2P.Peer.Store
         void AddAddress(PeerId p, Multiaddress addr, TimeSpan ttl);
         void AddAddresses(PeerId p, IEnumerable<Multiaddress> addrs, TimeSpan ttl);
         void ClearAddresses(PeerId peer);
-        BlockingCollection<Multiaddress> AddressStream(PeerId peer, CancellationToken cancellationToken);
+        //BlockingCollection<Multiaddress> AddressStream(PeerId peer, CancellationToken cancellationToken);
         void SetAddress(PeerId p, Multiaddress addr, TimeSpan ttl);
         void SetAddresses(PeerId p, IEnumerable<Multiaddress> addrs, TimeSpan ttl);
     }
