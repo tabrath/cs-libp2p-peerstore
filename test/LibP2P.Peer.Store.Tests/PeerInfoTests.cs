@@ -1,14 +1,13 @@
 ﻿using Multiformats.Address;
-using NUnit.Framework;
+using Xunit;
 
 namespace LibP2P.Peer.Store.Tests
 {
-    [TestFixture]
     public class PeerInfoTests
     {
         private static Multiaddress MustAddr(string s) => Multiaddress.Decode(s);
 
-        [Test]
+        [Fact]
         public void TestPeerInfoMarshal()
         {
             var a = MustAddr("/ip4/1.2.3.4/tcp/4536");
@@ -18,10 +17,10 @@ namespace LibP2P.Peer.Store.Tests
             var data = pi.MarshalJson();
             var pi2 = PeerInfo.UnmarshalJson(data);
 
-            Assert.That(pi2.Id, Is.EqualTo(pi.Id));
-            Assert.That(pi2.Addresses[0], Is.EqualTo(pi.Addresses[0]));
-            Assert.That(pi2.Addresses[1], Is.EqualTo(pi.Addresses[1]));
-            Assert.That(pi2.Id.ToString(), Is.EqualTo(id.ToString()));
+            Assert.Equal(pi2.Id, pi.Id);
+            Assert.Equal(pi2.Addresses[0], pi.Addresses[0]);
+            Assert.Equal(pi2.Addresses[1], pi.Addresses[1]);
+            Assert.Equal(pi2.Id.ToString(), id.ToString());
         }
     }
 }

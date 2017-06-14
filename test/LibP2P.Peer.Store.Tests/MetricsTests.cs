@@ -2,11 +2,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using NUnit.Framework;
+using Xunit;
 
 namespace LibP2P.Peer.Store.Tests
 {
-    [TestFixture]
     public class MetricsTests
     {
         public static string MakeRandomPeerId()
@@ -22,7 +21,7 @@ namespace LibP2P.Peer.Store.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void TestLatencyEWMA()
         {
             var m = new Metrics();

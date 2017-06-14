@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 using LibP2P.Utilities.Extensions;
 using Multiformats.Hash;
 using Multiformats.Hash.Algorithms;
-using NUnit.Framework;
+using Xunit;
 
 namespace LibP2P.Peer.Store.Tests
 {
-    [TestFixture]
     public class PeerQueueTests
     {
-        [Test]
+        [Fact]
         public void TestQueue()
         {
             var p1 = (PeerId) "11140beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a31";
@@ -32,17 +31,17 @@ namespace LibP2P.Peer.Store.Tests
             pq.Enqueue(p1);
 
             var d = pq.Dequeue();
-            Assert.That(d, Is.EqualTo(p1).Or.EqualTo(p5));
+            Assert.True(Equals(d, p1) || Equals(d, p5));
 
             d = pq.Dequeue();
-            Assert.That(d, Is.EqualTo(p1).Or.EqualTo(p5));
+            Assert.True(Equals(d, p1) || Equals(d, p5));
 
             d = pq.Dequeue();
-            Assert.That(d, Is.EqualTo(p1).Or.EqualTo(p5));
+            Assert.True(Equals(d, p1) || Equals(d, p5));
 
-            Assert.That(pq.Dequeue(), Is.EqualTo(p4));
-            Assert.That(pq.Dequeue(), Is.EqualTo(p3));
-            Assert.That(pq.Dequeue(), Is.EqualTo(p2));
+            Assert.Equal(pq.Dequeue(), p4);
+            Assert.Equal(pq.Dequeue(), p3);
+            Assert.Equal(pq.Dequeue(), p2);
         }
 
         private static PeerId MakePeer(DateTime dt)
@@ -54,7 +53,7 @@ namespace LibP2P.Peer.Store.Tests
             public int Iter { get; set; }
         }
 
-        //[Test]
+        //[Fact]
         public void TestSyncQueue()
         {
             const int max = 5000;
@@ -108,7 +107,7 @@ namespace LibP2P.Peer.Store.Tests
 
             sync.Dispose();
 
-            Assert.That(countsOut.Sum(), Is.EqualTo(countsIn.Sum()));
+            Assert.Equal(countsOut.Sum(), countsIn.Sum());
         }
     }
 

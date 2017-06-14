@@ -2,11 +2,10 @@
 using System.Linq;
 using System.Threading;
 using Multiformats.Address;
-using NUnit.Framework;
+using Xunit;
 
 namespace LibP2P.Peer.Store.Tests
 {
-    [TestFixture]
     public class AddressManagerTests
     {
         private static PeerId Id(string s) => PeerId.Decode(s);
@@ -14,15 +13,15 @@ namespace LibP2P.Peer.Store.Tests
 
         private static void TestHas(Multiaddress[] exp, Multiaddress[] act)
         {
-            Assert.That(act.Length, Is.EqualTo(exp.Length));
+            Assert.Equal(act.Length, exp.Length);
 
             foreach (var a in exp)
             {
-                Assert.That(act.Any(m => m.Equals(a)), Is.True);
+                Assert.True(act.Any(m => m.Equals(a)));
             }
         }
 
-        [Test]
+        [Fact]
         public void TestAddresses()
         {
             var id1 = Id("QmcNstKuwBBoVTpSCSDrwzjgrRcaYXK833Psuz2EMHwyQN");
@@ -67,7 +66,7 @@ namespace LibP2P.Peer.Store.Tests
             m.ClearAddresses(id5);
             m.AddAddresses(id5, new [] {ma51, ma52, ma53, ma54, ma55}, ttl);
 
-            Assert.That(m.Peers.Length, Is.EqualTo(5));
+            Assert.Equal(m.Peers.Length, 5);
 
             TestHas(new [] { ma11 }, m.Addresses(id1));
             TestHas(new [] { ma21, ma22 }, m.Addresses(id2));
@@ -76,7 +75,7 @@ namespace LibP2P.Peer.Store.Tests
             TestHas(new [] { ma51, ma52, ma53, ma54, ma55 }, m.Addresses(id5));
         }
 
-        [Test]
+        [Fact]
         public void TestAddressesExpire()
         {
             var id1 = Id("QmcNstKuwBBoVTpSCSDrwzjgrRcaYXK833Psuz2EMHwyQN");
@@ -94,7 +93,7 @@ namespace LibP2P.Peer.Store.Tests
             m.AddAddress(id2, ma24, TimeSpan.FromHours(1));
             m.AddAddress(id2, ma25, TimeSpan.FromHours(1));
 
-            Assert.That(m.Peers.Length, Is.EqualTo(2));
+            Assert.Equal(m.Peers.Length, 2);
 
             TestHas(new[] {ma11, ma12, ma13}, m.Addresses(id1));
             TestHas(new[] {ma24, ma25}, m.Addresses(id2));
@@ -134,7 +133,7 @@ namespace LibP2P.Peer.Store.Tests
             TestHas(Array.Empty<Multiaddress>(), m.Addresses(id2));
         }
 
-        [Test]
+        [Fact]
         public void TesetClearWorks()
         {
             var id1 = Id("QmcNstKuwBBoVTpSCSDrwzjgrRcaYXK833Psuz2EMHwyQN");
@@ -162,7 +161,7 @@ namespace LibP2P.Peer.Store.Tests
             TestHas(Array.Empty<Multiaddress>(), m.Addresses(id2));
         }
 
-        [Test]
+        [Fact]
         public void TestSetNegativeTTLClears()
         {
             var id1 = Id("QmcNstKuwBBoVTpSCSDrwzjgrRcaYXK833Psuz2EMHwyQN");
@@ -178,17 +177,15 @@ namespace LibP2P.Peer.Store.Tests
             TestHas(Array.Empty<Multiaddress>(), m.Addresses(id1));
         }
 
-        [Test]
+        [Fact]
         public void TestNilAddrsDontBreak()
         {
             var id1 = Id("QmcNstKuwBBoVTpSCSDrwzjgrRcaYXK833Psuz2EMHwyQN");
-            
+
             var m = new AddressManager();
-            Assert.DoesNotThrow(() =>
-            {
-                m.SetAddress(id1, null, TimeSpan.FromHours(1));
-                m.AddAddress(id1, null, TimeSpan.FromHours(1));
-            });
+
+            m.SetAddress(id1, null, TimeSpan.FromHours(1));
+            m.AddAddress(id1, null, TimeSpan.FromHours(1));
         }
     }
 }
