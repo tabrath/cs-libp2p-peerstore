@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Multiformats.Address;
-using NUnit.Framework;
+using Xunit;
 
 namespace LibP2P.Peer.Store.Tests
 {
-    [TestFixture]
     public class StoreTests
     {
         private static Multiaddress[] MakeAddresses(int count) => Enumerable.Range(0, count)
@@ -102,7 +101,7 @@ namespace LibP2P.Peer.Store.Tests
             }
         }*/
 
-        [Test]
+        [Fact]
         public void TestBasicStore()
         {
             var ps = new PeerStore();
@@ -116,13 +115,13 @@ namespace LibP2P.Peer.Store.Tests
                 ps.AddAddress(p, a, AddressManager.PermanentAddrTTL);
             }
 
-            Assert.That(ps.Peers.Length, Is.EqualTo(10));
+            Assert.Equal(ps.Peers.Length, 10);
 
             var pinfo = ps.PeerInfo(pids[0]);
-            Assert.That(pinfo.Addresses[0], Is.EqualTo(addrs[0]));
+            Assert.Equal(pinfo.Addresses[0], addrs[0]);
         }
 
-        [Test]
+        [Fact]
         public void TestStoreProtoStore()
         {
             var ps = new PeerStore();
@@ -130,16 +129,16 @@ namespace LibP2P.Peer.Store.Tests
             var protos = new[] {"a","b","c","d"};
             ps.AddProtocols(p1, protos);
             var output = ps.GetProtocols(p1);
-            Assert.That(output, Is.EqualTo(protos));
+            Assert.Equal(output, protos);
 
             var sorted = protos.ToList();
             sorted.Sort();
-            Assert.That(sorted.SequenceEqual(output), Is.True);
+            Assert.True(sorted.SequenceEqual(output));
 
             var supported = ps.SupportsProtocols(p1, "q", "w", "a", "y", "b");
-            Assert.That(supported.Length, Is.EqualTo(2));
-            Assert.That(supported[0], Is.EqualTo("a"));
-            Assert.That(supported[1], Is.EqualTo("b"));
+            Assert.Equal(supported.Length, 2);
+            Assert.Equal(supported[0], "a");
+            Assert.Equal(supported[1], "b");
         }
 
         //TODO: Test "streaming"-alike functionality

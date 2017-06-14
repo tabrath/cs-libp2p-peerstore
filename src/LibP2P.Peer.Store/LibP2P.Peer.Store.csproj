@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.6</TargetFrameworks>
+    <RuntimeIdentifiers>win7-x64;linux-x64</RuntimeIdentifiers>
+    <Description>LibP2P PeerStore</Description>
+    <Copyright>Copyright © tabrath 2017</Copyright>
+    <AssemblyTitle>LibP2P.Peer.Store</AssemblyTitle>
+    <VersionPrefix>1.1.0</VersionPrefix>
+    <Authors>tabrath</Authors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>LibP2P.Peer.Store</AssemblyName>
+    <PackageId>LibP2P.Peer.Store</PackageId>
+    <PackageTags>libp2p peerstore</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/libp2p/website/0f6f8c7/static/img/favicon.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/libp2p/cs-libp2p-peerstore/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/libp2p/cs-libp2p-peerstore</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/libp2p/cs-libp2p-peerstore</RepositoryUrl>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="KeySpace" Version="1.1.0" />
+    <PackageReference Include="LibP2P.Peer" Version="1.1.0" />
+    <PackageReference Include="LibP2P.Utilities" Version="1.1.0" />
+    <PackageReference Include="Multiformats.Address" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+  </ItemGroup>
+</Project>
